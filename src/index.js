@@ -18,7 +18,7 @@ function checksExistsUserAccount(request, response, next) {
   )
 
   if(!user){
-    return response.status(400).json({error: "User not exist"})
+    return response.status(404).json({error: "User not exist"})
   }
 
   request.user = user
@@ -46,7 +46,7 @@ app.post('/users', (request, response) => {
 
   users.push(user)
 
-  return response.status(201).json(users)
+  return response.status(201).json(user)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
@@ -85,7 +85,7 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   )
 
   if(!todo){
-    return response.status(400).json({error:"Todo not exist"})
+    return response.status(404).json({error:"Todo not exist"})
   }
 
   todo.title = title
@@ -104,7 +104,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   )
 
   if(!todo){
-    return response.status(400).json({error:"Todo not exist"})
+    return response.status(404).json({error:"Todo not exist"})
   }
 
   todo.done = true
@@ -117,17 +117,17 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   const {user} = request
 
-  const todo = user.todos.find(
+  const todo = user.todos.findIndex(
     (todo) => todo.id === id
   )
 
-  if(!todo){
+  if(todo === -1){
     return response.status(404).json({error:"Todo not exist"})
   }
 
   user.todos.splice(todo, 1)
 
-  return response.status(204)
+  return response.status(204).send()
 });
 
 module.exports = app;
